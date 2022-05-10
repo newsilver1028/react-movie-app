@@ -1,6 +1,6 @@
 import { atom } from "recoil";
 
-export const searchMovieState = atom({
+export const bookmarkMovieState = atom({
   key: "searchMovieState",
-  default: "",
+  default: [],
 });

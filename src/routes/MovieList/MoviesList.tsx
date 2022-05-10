@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from "react";
-import Movie from "./components/Movie";
-import { useMovieAPI } from "./hooks/useMovieAPI";
-import { IMovieSearch } from "./types/movieTypes";
+import AddBookmarkModal from "../../components/Modal/AddBookmarkModal";
+import Movie from "../../components/Movie";
+import SearchMovieForm from "../../components/SearchMovieForm";
+import { useMovieAPI } from "../../hooks/useMovieAPI";
+import { IMovieSearch } from "../../types/movieTypes";
 
-export default function Wrapper() {
+export default function MoviesList() {
   const [search, setSearch] = useState<string>("");
   const [query, setQuery] = useState<string>("");
   const { loading, error, moviesList, setPage } = useMovieAPI(query);
   const loader = useRef(null);
 
+  const [isOpanBookmarkModal, setIsOpenBookarkModal] = useState<boolean>(false);
+  const [clickedMovieId, setClickedMovieId] = useState<string>("");
+
   const handleObserver = (entries: any) => {
     const target = entries[0];
-    if (target.isIntersecting && query === "") {
+    if (target.isIntersecting && query !== "") {
       console.log("it's work");
       setPage((prev) => prev + 1);
       return;
@@ -54,6 +59,19 @@ export default function Wrapper() {
     setPage(1);
   };
 
+  const handleMovieListClick = (e: any) => {
+    const dataset = e.currentTarget.dataset;
+    const { imdbid } = dataset;
+    setIsOpenBookarkModal(true);
+    setClickedMovieId(imdbid);
+    console.log({ isOpen: isOpanBookmarkModal });
+  };
+
+  const handleIsMarkedClick = () => {
+    console.log({ clickIsMarked: clickedMovieId });
+    // 전역 상태로 사용자 아이디마다 즐겨찾기 저장.
+  };
+
   return (
     <div>
       <form>
@@ -62,27 +80,36 @@ export default function Wrapper() {
           seacrh
         </button>
       </form>
+      {/* <SearchMovieForm search={search} onChange={handleInputTextChange} onClick={handleSubmitButtonClick}/> */}
       <div>
         <div className="scrollArea">
-          {moviesList.length === 0
-            ? "검색결과가 없습니다"
-            : `${query} 결과 출력`}
+          {moviesList.length === 0 && "검색결과가 없습니다"}
+          {isOpanBookmarkModal && (
+            <AddBookmarkModal
+              clickedMovieId={clickedMovieId}
+              setIsOpenBookMarkModal={setIsOpenBookarkModal}
+              handleIsMarkedClick={handleIsMarkedClick}
+            />
+          )}
           <ul>
             {moviesList.map((movie: IMovieSearch): JSX.Element => {
               const { Title, Year, imdbID, Type, Poster } = movie;
-              console.log({ imbdID: imdbID });
+              console.log({ imdbID: imdbID });
 
               return (
                 <Movie
                   key={imdbID}
+                  imdbID={imdbID}
                   title={Title}
                   year={Year}
                   type={Type}
                   poster={Poster}
+                  onClick={handleMovieListClick}
                 />
               );
             })}
           </ul>
+          {/* <MoviesList moviesList={moviesList} /> */}
           <div ref={loader} />
           {loading && <p>loading...</p>}
           {error && <p>Error!</p>}

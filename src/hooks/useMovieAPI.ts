@@ -8,7 +8,6 @@ export const useMovieAPI = (query: any) => {
   const [moviesList, setMoviesList] = useState<IMovieSearch[]>([]);
   const [isDone, setIsDone] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
-
   const sendQuery = useCallback(
     async (params: string) => {
       try {
