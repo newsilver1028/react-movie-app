@@ -1,44 +1,30 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Movie from "./components/Movie";
-import { useFetch } from "./hooks/useFetch";
+import { useMovieAPI } from "./hooks/useMovieAPI";
 import { IMovieSearch } from "./types/movieTypes";
 
 export default function Wrapper() {
   const [search, setSearch] = useState<string>("");
-  const [page, setPage] = useState<number>(1);
   const [query, setQuery] = useState<string>("");
-  // const { loading, error, moviesList, totalResult, hasMoreData } = useFetch(
-  //   query,
-  //   page
-  // );
-  const [hasMoreData, setHasMoreData] = useState<boolean>(false);
-  const { loading, error, moviesList, totalResult } = useFetch(
-    query,
-    page,
-    hasMoreData
-  );
+  const { loading, error, moviesList, setPage } = useMovieAPI(query);
   const loader = useRef(null);
-  const rootRef = useRef(null);
 
-  const handleObserver = useCallback(
-    (entries: any) => {
-      const target = entries[0];
-      if (hasMoreData && target.interesecting) {
-        console.log("it's work");
-        setPage((prev) => prev + 1);
-        setHasMoreData(moviesList.length < totalResult);
-        return;
-      }
-    },
-    [hasMoreData, moviesList.length, totalResult]
-  );
+  const handleObserver = (entries: any) => {
+    const target = entries[0];
+    if (target.isIntersecting && query === "") {
+      console.log("it's work");
+      setPage((prev) => prev + 1);
+      return;
+    }
+  };
 
   useEffect(() => {
     const option = {
       root: null,
       rootMargin: "20px",
-      threshold: 0.5,
+      threshold: 1,
     };
+    console.log({ loader, query });
     let observer = new global.IntersectionObserver(handleObserver, option);
     if (loader.current) {
       observer = new global.IntersectionObserver(handleObserver, {
@@ -47,10 +33,13 @@ export default function Wrapper() {
       observer.observe(loader.current);
     }
     return () => {
-      setPage((prev) => prev + 1);
       return observer && observer.disconnect();
     };
-  }, [handleObserver, loader]);
+  }, [loader, query]);
+
+  // query가 없는 deps면
+  // handleObserver callback이
+  // query === empty string일 때 만들어진 callback이
 
   const handleInputTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const targetValue = e.target.value;
@@ -62,8 +51,8 @@ export default function Wrapper() {
   ) => {
     e.preventDefault();
     setQuery(search);
+    setPage(1);
   };
-  console.log({ hasInWrapper: hasMoreData });
 
   return (
     <div>
@@ -78,24 +67,21 @@ export default function Wrapper() {
           {moviesList.length === 0
             ? "검색결과가 없습니다"
             : `${query} 결과 출력`}
-
           <ul>
-            {hasMoreData &&
-              moviesList.map(
-                (movie: IMovieSearch, index: number): JSX.Element => {
-                  const { Title, Year, imbdID, Type, Poster } = movie;
-                  // console.log({ movie: movie });
-                  return (
-                    <Movie
-                      key={imbdID}
-                      title={Title}
-                      year={Year}
-                      type={Type}
-                      poster={Poster}
-                    />
-                  );
-                }
-              )}
+            {moviesList.map((movie: IMovieSearch): JSX.Element => {
+              const { Title, Year, imdbID, Type, Poster } = movie;
+              console.log({ imbdID: imdbID });
+
+              return (
+                <Movie
+                  key={imdbID}
+                  title={Title}
+                  year={Year}
+                  type={Type}
+                  poster={Poster}
+                />
+              );
+            })}
           </ul>
           <div ref={loader} />
           {loading && <p>loading...</p>}

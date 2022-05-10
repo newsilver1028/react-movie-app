@@ -1,7 +1,7 @@
 export interface IMovieSearch {
   Title: string;
   Year: string;
-  imbdID: string;
+  imdbID: string;
   Type: string;
   Poster: string;
 }
