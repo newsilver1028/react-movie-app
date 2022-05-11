@@ -1,27 +1,31 @@
-import { AddBookMarkModalProps } from "../../types/movieTypes";
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { bookmarkMoviesState } from '../../state/bookmarkMoviesState';
+import { clickedTargetMovieState } from '../../state/clickedTargetMovieState';
+import { AddBookMarkModalProps, IMovieSearch, IMovieSearchProps } from '../../types/movieTypes';
 
 export default function AddBookmarkModal(props: AddBookMarkModalProps) {
-  const { clickedMovieId, setIsOpenBookMarkModal, handleIsMarkedClick } = props;
+  const { setIsOpenBookMarkModal, handleAddBookmarkClick } = props;
+  const bookmarkMoviesList = useRecoilValue(bookmarkMoviesState);
+  // const isMarked = bookmarkMoviesList.includes(clickedMovieId);
+
+  const [clickedMovie, setClickedMovie] = useRecoilState<string>(clickedTargetMovieState);
+
+  const isMarked = bookmarkMoviesList.filter(
+    (movie: IMovieSearch) => movie.imdbID === clickedMovie,
+  );
 
   const handleModalOutsideClick = () => {
     setIsOpenBookMarkModal(false);
   };
 
-  // const handleIsMarkedClick = () => {
-  //   console.log({ clickIsMarked: clickedMovieId });
-  // };
   return (
     <div>
       {/* background */}
-      <div onClick={handleModalOutsideClick}>
-        {/* isMarked에 따라 즐겨찾기 추가 | 제거
-         * isMarked button을 클릭해도 모달창이 닫힘 ㅠㅜㅠ
-         */}
-        <button type="button" onClick={handleIsMarkedClick}>
-          isMarked
+      <div onClick={handleModalOutsideClick} aria-hidden="true">
+        <button type="button" onClick={handleAddBookmarkClick}>
+          {isMarked.length === 0 ? '즐겨찾기' : '즐겨찾기 제거'}
         </button>
         <button type="button">cancel</button>
-        <div>{clickedMovieId}</div>
       </div>
     </div>
   );

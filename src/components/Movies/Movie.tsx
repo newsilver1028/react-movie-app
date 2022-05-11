@@ -1,6 +1,16 @@
-import { IMovieSearchProps } from "../types/movieTypes";
-import { GlobalStyle } from "../styles/styled";
-import styled from "styled-components";
+import styled from 'styled-components';
+import { IMovieSearchProps } from '../../types/movieTypes';
+import { GlobalStyle } from '../../styles/styled';
+
+const List = styled.li`
+  display: flex;
+  background-color: aliceblue;
+  cursor: pointer;
+
+  img {
+    width: 100px;
+  }
+`;
 
 export default function Movie(props: IMovieSearchProps) {
   const { imdbID, title, year, type, poster, onClick } = props;
@@ -15,16 +25,6 @@ export default function Movie(props: IMovieSearchProps) {
     </List>
   );
 }
-
-const List = styled.li`
-  display: flex;
-  background-color: aliceblue;
-  cursor: pointer;
-
-  img {
-    width: 100px;
-  }
-`;
 
 interface MovieListProps {
   bgColor: string;

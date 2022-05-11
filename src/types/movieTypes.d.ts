@@ -18,11 +18,12 @@ export interface IMovieSearchProps {
   year: string;
   type: string;
   poster: string;
-  onClick: (e: any) => void;
+  isMarked?: boolean;
+  onClick?: (e: any) => void;
 }
 
 export interface AddBookMarkModalProps {
-  clickedMovieId: string;
+  clickedMovie: string;
   setIsOpenBookMarkModal: Dispatch<SetStateAction<boolean>>;
-  handleIsMarkedClick: () => void;
+  handleAddBookmarkClick: (e: any) => void;
 }
