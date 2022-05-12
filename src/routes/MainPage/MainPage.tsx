@@ -59,8 +59,10 @@ const MainPageContainer = styled.div`
     position: absolute;
     top: 300px;
     left: 0;
-    text-align: center;
     width: 100%;
+    text-align: center;
+    color: dimgray;
+    font-size: 1.2rem;
   }
 `;
 
