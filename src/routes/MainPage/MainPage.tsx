@@ -1,7 +1,68 @@
 import { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import { FiSearch } from 'react-icons/fi';
 import MoviesList from '../../components/MoviesList/MoviesList';
 import { useMovieAPI } from '../../hooks/useMovieAPI';
 import { IMovieSearch } from '../../types/movieTypes';
+import Footer from '../../components/Footer';
+
+const MainPageContainer = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  header {
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
+  form {
+    display: flex;
+    flex-flow: column wrap;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 50px;
+  }
+
+  input {
+    width: 80%;
+    height: 40px;
+    border: none;
+    border-bottom: 1px solid lightgrey;
+    font-size: 1.2rem;
+    color: dimgray;
+    background-color: transparent;
+  }
+
+  input:focus {
+    outline: none;
+  }
+
+  button {
+    position: absolute;
+    right: 40px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  .scrollArea {
+    margin: 40px auto;
+  }
+
+  .nothingResult {
+    position: absolute;
+    top: 300px;
+    left: 0;
+    text-align: center;
+    width: 100%;
+  }
+`;
 
 export default function MainPage(props: { bookmarkLocalData: IMovieSearch[] }) {
   const { bookmarkLocalData } = props;
@@ -53,7 +114,8 @@ export default function MainPage(props: { bookmarkLocalData: IMovieSearch[] }) {
   };
 
   return (
-    <div>
+    <MainPageContainer>
+      {/* <div> */}
       <header>
         <form>
           <input
@@ -63,16 +125,18 @@ export default function MainPage(props: { bookmarkLocalData: IMovieSearch[] }) {
             onChange={handleInputTextChange}
           />
           <button type="submit" onClick={handleSubmitButtonClick}>
-            seacrh
+            <FiSearch color="dimgray" size="s" />
           </button>
         </form>
       </header>
-      {moviesList.length === 0 && '검색결과가 없습니다'}
       <div className="scrollArea">
+        {moviesList.length === 0 && <div className="nothingResult">검색결과가 없습니다</div>}
         <MoviesList moviesList={moviesList} />
         <div ref={loader} />
         {loading && <p>loading...</p>}
       </div>
-    </div>
+      {/* </div> */}
+      <Footer />
+    </MainPageContainer>
   );
 }

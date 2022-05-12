@@ -8,33 +8,44 @@ import { clickedTargetMovieState } from '../../state/clickedTargetMovieState';
 import { IMovieSearch } from '../../types/movieTypes';
 import { getNewBookmarkList } from '../../util/getNewBookmarkList';
 
+const initialState = [{ Title: '', Year: '', imdbID: '', Type: '', Poster: '' }];
+
 export default function MoviesList(props: { moviesList: IMovieSearch[] }) {
   const { moviesList } = props;
+
   const [isOpenBookmarkModal, setIsOpenBookarkModal] = useState<boolean>(false);
   const [clickedMovie] = useRecoilState<string>(clickedTargetMovieState);
 
-  const [bookmarkMoviesList, setBookmarkMoviesList] =
-    useRecoilState<IMovieSearch[]>(bookmarkMoviesState);
+  const [localData, setLocalData] = useState<IMovieSearch[]>(initialState);
+
+  useEffect(() => {
+    // const getLocalData = store.get('movieAppUser');
+    const getLocalData = localStorage.getItem('movieAppUser');
+    if (!getLocalData) {
+      console.log('new user');
+      setLocalData([]);
+      return;
+    }
+    const parsedLocalData = JSON.parse(getLocalData!);
+    setLocalData(parsedLocalData);
+  }, []);
+
+  console.log({ localData });
 
   const handleAddBookmarkClick = (e: any) => {
-    setBookmarkMoviesList((prev: IMovieSearch[]): IMovieSearch[] => {
-      const array = getNewBookmarkList(clickedMovie, bookmarkMoviesList, prev);
-      store.set({ movieAppUser: array });
+    setLocalData((prev: IMovieSearch[]): IMovieSearch[] => {
+      const array = getNewBookmarkList(clickedMovie, prev, moviesList);
+      const object = {
+        movieAppUser: array,
+      };
+      // store.set('movieAppUser', array);
+      localStorage.setItem('movieAppUser', JSON.stringify(object));
+      console.log({ array });
+
       return array;
     });
     setIsOpenBookarkModal(false);
   };
-
-  useEffect(() => {
-    const localData = store.get('movieAppUser');
-    setBookmarkMoviesList(localData);
-  }, []);
-
-  console.log({ bookmarkMoviesList });
-
-  useEffect(() => {
-    store.set({ movieAppUser: bookmarkMoviesList });
-  }, [bookmarkMoviesList]);
 
   return (
     <div>

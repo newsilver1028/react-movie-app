@@ -10,9 +10,12 @@ export default function Bookmark(props: { bookmarkLocalData: IMovieSearch[] }) {
 
   const [localData, setLocalData] = useState<IMovieSearch[]>(initialState);
   useEffect(() => {
+    console.log({ bookmarkLocalData });
+
     const getLocalData = store.get('movieAppUser');
-    if (getLocalData.length === 0) {
-      // setLocalData(initialState);
+    if (!getLocalData) {
+      console.log('new user');
+      setLocalData([]);
     }
     setLocalData(getLocalData);
   }, []);
