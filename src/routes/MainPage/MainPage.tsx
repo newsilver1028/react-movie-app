@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { FiSearch } from 'react-icons/fi';
+import styled from 'styled-components';
 import MoviesList from '../../components/MoviesList/MoviesList';
 import { useMovieAPI } from '../../hooks/useMovieAPI';
-import { IMovieSearch } from '../../types/movieTypes';
-import Footer from '../../components/Footer';
 
 const MainPageContainer = styled.div`
   position: relative;
@@ -36,14 +34,14 @@ const MainPageContainer = styled.div`
     background-color: transparent;
   }
 
-  input:focus {
+  input:focus,
+  .submitButton:focus {
     outline: none;
   }
 
-  button {
+  .submitButton {
     position: absolute;
-    right: 40px;
-    width: 40px;
+    right: 10%;
     height: 40px;
     border: none;
     background-color: transparent;
@@ -52,7 +50,10 @@ const MainPageContainer = styled.div`
   }
 
   .scrollArea {
-    margin: 40px auto;
+    margin-top: 50px;
+    width: 100%;
+    height: 620px;
+    overflow-y: scroll;
   }
 
   .nothingResult {
@@ -64,21 +65,32 @@ const MainPageContainer = styled.div`
     color: dimgray;
     font-size: 1.2rem;
   }
+
+  .loadingArea {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    padding: 20px;
+    color: white;
+    background-color: black;
+    border-radius: 20px;
+    z-index: 3;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
 `;
 
-export default function MainPage(props: { bookmarkLocalData: IMovieSearch[] }) {
-  const { bookmarkLocalData } = props;
+export default function MainPage() {
   const [search, setSearch] = useState<string>('');
-  const [query, setQuery] = useState<string>('');
-
-  const { loading, error, moviesList, setPage, setMoviesList } = useMovieAPI(query);
+  const { query, loading, moviesList, isDone, fetchQuery, loadMore } = useMovieAPI();
 
   const loader = useRef(null);
-  const handleObserver = (entries: any) => {
-    // console.log({ typeOfEnt: typeof entries });
+  const handleObserver = (entries: IntersectionObserverEntry[]) => {
     const target = entries[0];
-    if (target.isIntersecting && query !== '') {
-      setPage((prev: number) => prev + 1);
+
+    if (target.isIntersecting && query !== '' && !isDone) {
+      loadMore();
       return;
     }
   };
@@ -110,14 +122,11 @@ export default function MainPage(props: { bookmarkLocalData: IMovieSearch[] }) {
 
   const handleSubmitButtonClick = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    setMoviesList([]);
-    setQuery(search);
-    setPage(1);
+    fetchQuery(search);
   };
 
   return (
     <MainPageContainer>
-      {/* <div> */}
       <header>
         <form>
           <input
@@ -126,8 +135,8 @@ export default function MainPage(props: { bookmarkLocalData: IMovieSearch[] }) {
             onClick={handleInputClick}
             onChange={handleInputTextChange}
           />
-          <button type="submit" onClick={handleSubmitButtonClick}>
-            <FiSearch color="dimgray" size="s" />
+          <button className="submitButton" type="submit" onClick={handleSubmitButtonClick}>
+            <FiSearch className="searchIcon" color="dimgray" size="30" />
           </button>
         </form>
       </header>
@@ -135,10 +144,8 @@ export default function MainPage(props: { bookmarkLocalData: IMovieSearch[] }) {
         {moviesList.length === 0 && <div className="nothingResult">검색결과가 없습니다</div>}
         <MoviesList moviesList={moviesList} />
         <div ref={loader} />
-        {loading && <p>loading...</p>}
+        {loading && <div className="loadingArea">loading...</div>}
       </div>
-      {/* </div> */}
-      <Footer />
     </MainPageContainer>
   );
 }

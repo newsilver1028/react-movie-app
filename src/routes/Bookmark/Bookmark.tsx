@@ -1,29 +1,25 @@
-import { useEffect, useState } from 'react';
-import store from 'storejs';
+import { useRecoilValue } from 'recoil';
+import styled from 'styled-components';
 import MoviesList from '../../components/MoviesList/MoviesList';
-import { IMovieSearch } from '../../types/movieTypes';
+import { bookmarkMoviesState } from '../../state/bookmarkMoviesState';
 
-const initialState = [{ Title: '', Year: '', imdbID: '', Type: '', Poster: '' }];
+const BookmarkContainer = styled.div`
+  header {
+    padding: 40px;
+    width: 100%;
+    height: 40px;
+  }
+`;
 
-export default function Bookmark(props: { bookmarkLocalData: IMovieSearch[] }) {
-  const { bookmarkLocalData } = props;
-
-  const [localData, setLocalData] = useState<IMovieSearch[]>(initialState);
-  useEffect(() => {
-    console.log({ bookmarkLocalData });
-
-    const getLocalData = store.get('movieAppUser');
-    if (!getLocalData) {
-      console.log('new user');
-      setLocalData([]);
-    }
-    setLocalData(getLocalData);
-  }, []);
+export default function Bookmark() {
+  const bookmarkMovies = useRecoilValue(bookmarkMoviesState);
 
   return (
-    <div>
-      bookmark page
-      <MoviesList moviesList={localData} />
-    </div>
+    <BookmarkContainer>
+      <header>
+        <h1>내 즐겨찾기</h1>
+      </header>
+      <MoviesList moviesList={bookmarkMovies} />
+    </BookmarkContainer>
   );
 }

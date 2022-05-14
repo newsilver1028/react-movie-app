@@ -1,62 +1,31 @@
-import { useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
-import store from 'storejs';
+import { useState } from 'react';
+import styled from 'styled-components';
+import { IMovieSearch } from '../../types/movieTypes';
 import AddBookmarkModal from '../Modal/AddBookmarkModal';
 import Movies from '../Movies/Movies';
-import { bookmarkMoviesState } from '../../state/bookmarkMoviesState';
-import { clickedTargetMovieState } from '../../state/clickedTargetMovieState';
-import { IMovieSearch } from '../../types/movieTypes';
-import { getNewBookmarkList } from '../../util/getNewBookmarkList';
 
-const initialState = [{ Title: '', Year: '', imdbID: '', Type: '', Poster: '' }];
+const MoviesListContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 
-export default function MoviesList(props: { moviesList: IMovieSearch[] }) {
-  const { moviesList } = props;
-
+export default function MoviesList({ moviesList }: { moviesList: IMovieSearch[] }) {
   const [isOpenBookmarkModal, setIsOpenBookarkModal] = useState<boolean>(false);
-  const [clickedMovie] = useRecoilState<string>(clickedTargetMovieState);
+  const [clickedMovie, setClickedMovie] = useState<IMovieSearch | undefined>(undefined);
 
-  const [localData, setLocalData] = useState<IMovieSearch[]>(initialState);
-
-  useEffect(() => {
-    // const getLocalData = store.get('movieAppUser');
-    const getLocalData = localStorage.getItem('movieAppUser');
-    if (!getLocalData) {
-      console.log('new user');
-      setLocalData([]);
-      return;
-    }
-    const parsedLocalData = JSON.parse(getLocalData!);
-    setLocalData(parsedLocalData);
-  }, []);
-
-  console.log({ localData });
-
-  const handleAddBookmarkClick = (e: any) => {
-    setLocalData((prev: IMovieSearch[]): IMovieSearch[] => {
-      const array = getNewBookmarkList(clickedMovie, prev, moviesList);
-      const object = {
-        movieAppUser: array,
-      };
-      // store.set('movieAppUser', array);
-      localStorage.setItem('movieAppUser', JSON.stringify(object));
-      console.log({ array });
-
-      return array;
-    });
-    setIsOpenBookarkModal(false);
+  const handleMoviItemClick = (item: IMovieSearch) => {
+    setClickedMovie(item);
+    setIsOpenBookarkModal(true);
   };
 
+  const handleModalClose = () => setIsOpenBookarkModal(false);
+
   return (
-    <div>
-      {isOpenBookmarkModal && (
-        <AddBookmarkModal
-          clickedMovie={clickedMovie}
-          setIsOpenBookMarkModal={setIsOpenBookarkModal}
-          handleAddBookmarkClick={handleAddBookmarkClick}
-        />
+    <MoviesListContainer>
+      {clickedMovie && isOpenBookmarkModal && (
+        <AddBookmarkModal clickedMovie={clickedMovie} onClose={handleModalClose} />
       )}
-      <Movies moviesList={moviesList} setIsOpenBookMarkModal={setIsOpenBookarkModal} />
-    </div>
+      <Movies moviesList={moviesList} onClickItem={handleMoviItemClick} />
+    </MoviesListContainer>
   );
 }

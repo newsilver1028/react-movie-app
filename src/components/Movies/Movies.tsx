@@ -1,63 +1,38 @@
-import { Dispatch, SetStateAction } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import { clickedTargetMovieState } from '../../state/clickedTargetMovieState';
+import { bookmarkMoviesState } from '../../state/bookmarkMoviesState';
 import { IMovieSearch } from '../../types/movieTypes';
 import Movie from './Movie';
 
 const MovieContainer = styled.ul`
   position: relative;
   display: flex;
-  flex-flow: column nowrap;
-  padding: 0;
-  height: 610px;
-  overflow-y: scroll;
-  width: 360px;
-
-  ::-webkit-scrollbar {
-    width: 5px;
-    position: absolute;
-  }
-
-  ::-webkit-scrollbar-track {
-    /* border-radius: 5px; */
-    background-color: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: lightgray;
-    border-radius: 10px;
-  }
+  flex-direction: column;
+  padding: 40px;
+  width: 80%;
 `;
 
-export default function Movies(props: {
+export interface Props {
   moviesList: IMovieSearch[];
-  setIsOpenBookMarkModal: Dispatch<SetStateAction<boolean>>;
-}) {
-  const { moviesList, setIsOpenBookMarkModal } = props;
+  onClickItem?: (item: IMovieSearch) => void;
+}
 
-  const [, setClickedMovie] = useRecoilState<string>(clickedTargetMovieState);
-
-  const handleMovieListClick = (e: any) => {
-    const { imdbid } = e.currentTarget.dataset;
-    setIsOpenBookMarkModal(true);
-    setClickedMovie(imdbid);
+export default function Movies({ moviesList, onClickItem }: Props) {
+  const bookmarkList = useRecoilValue(bookmarkMoviesState);
+  const handleMovieListClick = (movie: IMovieSearch) => {
+    onClickItem?.(movie);
   };
 
   return (
     <MovieContainer>
       {moviesList.map((movie: IMovieSearch): JSX.Element => {
-        const { Title, Year, imdbID, Type, Poster } = movie;
-
+        const isMarked = bookmarkList.some((bookmark) => bookmark.imdbID === movie.imdbID);
         return (
           <Movie
-            key={imdbID}
-            imdbID={imdbID}
-            title={Title}
-            year={Year}
-            type={Type}
-            poster={Poster}
-            onClick={handleMovieListClick}
+            key={movie.imdbID}
+            movie={movie}
+            onClickItem={handleMovieListClick}
+            isMarked={isMarked}
           />
         );
       })}

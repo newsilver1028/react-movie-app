@@ -1,11 +1,11 @@
+import { FaStar } from 'react-icons/fa';
+import { FiStar } from 'react-icons/fi';
 import styled from 'styled-components';
-import { IMovieSearchProps } from '../../types/movieTypes';
-import { GlobalStyle } from '../../styles/styled';
+import { IMovieSearch } from '../../types/movieTypes';
 
-const MvoieList = styled.li`
+const MovieList = styled.li`
   display: flex;
-  flex-flow: row nowrap;
-  width: 350px;
+  width: 100%;
   height: 113px;
   border-radius: 10px;
   margin-bottom: 20px;
@@ -15,14 +15,14 @@ const MvoieList = styled.li`
 
   .textContents {
     display: flex;
+    flex: 1;
     padding: 10px;
-    flex-flow: row wrap;
     align-items: center;
+    text-align: left;
   }
 
   .title {
-    width: 250px;
-    height: 45px;
+    width: 70%;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 1.2rem;
@@ -31,7 +31,7 @@ const MvoieList = styled.li`
 
   .year,
   .type {
-    width: 140px;
+    width: 110px;
     text-align: center;
   }
 
@@ -39,21 +39,40 @@ const MvoieList = styled.li`
     width: 80px;
     height: 113px;
     border-radius: 10px;
+    text-overflow: ellipsis;
+  }
+
+  .bookmarkIcon {
+    color: orange;
   }
 `;
 
-export default function Movie(props: IMovieSearchProps) {
-  const { imdbID, title, year, type, poster, onClick } = props;
+export interface IMovieSearchProps {
+  isMarked?: boolean;
+  movie: IMovieSearch;
+  onClickItem?: (movie: IMovieSearch) => void;
+}
+
+export default function Movie({ movie, isMarked, onClickItem }: IMovieSearchProps) {
+  const { Title: title, Year: year, imdbID, Type: type, Poster: poster } = movie;
+
+  const handleClick = () => {
+    onClickItem?.(movie);
+  };
 
   return (
-    <MvoieList key={imdbID} data-imdbid={imdbID} onClick={onClick}>
-      {/* <GlobalStyle bgColor="black" /> */}
+    <MovieList key={imdbID} data-imdbid={imdbID} onClick={handleClick}>
       <img src={poster} alt={title} />
       <div className="textContents">
         <div className="title">{title}</div>
         <span className="year">{year}</span>
         <span className="type">{type}</span>
+        {isMarked ? (
+          <FaStar className="bookmarkIcon" size="30" />
+        ) : (
+          <FiStar className="bookmarkIcon" size="30" />
+        )}
       </div>
-    </MvoieList>
+    </MovieList>
   );
 }

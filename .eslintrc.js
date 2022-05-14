@@ -22,6 +22,7 @@ module.exports = {
     'function-paren-newline': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx', '.ts', 'tsx'] }],
     'import/extensions': ['off'],
+    'react/require-default-props': 'off',
   },
   ignorePatterns: ['.eslintrc.js'],
   settings: {

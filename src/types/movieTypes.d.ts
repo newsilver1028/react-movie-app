@@ -11,19 +11,3 @@ export interface IMovie {
   totalResults: string;
   Response: string;
 }
-
-export interface IMovieSearchProps {
-  imdbID: string;
-  title: string;
-  year: string;
-  type: string;
-  poster: string;
-  isMarked?: boolean;
-  onClick?: (e: any) => void;
-}
-
-export interface AddBookMarkModalProps {
-  clickedMovie: string;
-  setIsOpenBookMarkModal: Dispatch<SetStateAction<boolean>>;
-  handleAddBookmarkClick: (e: any) => void;
-}

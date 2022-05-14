@@ -3,12 +3,14 @@ import axios from 'axios';
 import * as _ from 'lodash';
 import { IMovieSearch } from '../types/movieTypes';
 
-export const useMovieAPI = (query: any) => {
+export const useMovieAPI = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [moviesList, setMoviesList] = useState<IMovieSearch[]>([]);
   const [isDone, setIsDone] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
+  const [query, setQuery] = useState<string>('');
+
   const sendQuery = useCallback(
     async (params: string) => {
       try {
@@ -19,16 +21,11 @@ export const useMovieAPI = (query: any) => {
         );
 
         if (response.data.Response === 'False') {
-          console.log('??????????', { res: response, isDone });
           setIsDone(true);
-          // 추가한 코드
-          // setMoviesList([]);
-          // setLoading(false);
           return;
         }
 
         if (!response) {
-          console.log('??????????', { res: response, isDone });
           setError(true);
           setLoading(false);
           setIsDone(true);
@@ -40,23 +37,39 @@ export const useMovieAPI = (query: any) => {
         setMoviesList((prev: IMovieSearch[]) => [...prev, ...removedDuplicateList]);
       } catch (e: any) {
         setError(true);
-        console.log(e);
+        console.error(e);
       } finally {
         setLoading(false);
-        setIsDone(false);
       }
     },
     [page],
   );
 
   useEffect(() => {
-    console.log('???', { isDone });
     if (isDone || query === '') {
       return;
     }
 
     sendQuery(query);
-  }, [query, sendQuery, page]);
+  }, [query, sendQuery, page, isDone]);
 
-  return { loading, error, moviesList, setMoviesList, setPage, page };
+  const fetchQuery = (search: string) => {
+    setQuery(search);
+    setMoviesList([]);
+    setPage(1);
+    setIsDone(false);
+  };
+  const loadMore = () => {
+    setPage((prev) => prev + 1);
+  };
+
+  return {
+    query,
+    loading,
+    error,
+    moviesList,
+    isDone,
+    fetchQuery,
+    loadMore,
+  };
 };

@@ -10299,6 +10299,7 @@ __metadata:
     react-router-dom: ^6.3.0
     react-scripts: 5.0.1
     recoil: ^0.7.3-alpha.1
+    recoil-persist: ^4.1.0
     storejs: ^2.0.1
     styled-components: ^5.3.5
     typescript: ^4.4.2
@@ -10445,6 +10446,15 @@ __metadata:
   dependencies:
     picomatch: ^2.2.1
   checksum: 1ced032e6e45670b6d7352d71d21ce7edf7b9b928494dcaba6f11fba63180d9da6cd7061ebc34175ffda6ff529f481818c962952004d273178acd70f7059b320
+  languageName: node
+  linkType: hard
+
+"recoil-persist@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "recoil-persist@npm:4.1.0"
+  peerDependencies:
+    recoil: ^0.6.1
+  checksum: d17dbc3bea5462b35be0f893392e388867491b2e04faeedadc1e5bce2f4826d09ad6359846a6792e66173cf5387bfd0de7424b07c7ad3c7e9b29c2fdbaceaf70
   languageName: node
   linkType: hard
 
