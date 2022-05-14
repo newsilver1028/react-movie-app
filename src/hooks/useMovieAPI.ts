@@ -3,6 +3,8 @@ import axios from 'axios';
 import * as _ from 'lodash';
 import { IMovieSearch } from '../types/movieTypes';
 
+const apikey = process.env.REACT_APP_MOVIE_API_KEY;
+
 export const useMovieAPI = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
@@ -16,9 +18,18 @@ export const useMovieAPI = () => {
       try {
         setLoading(true);
         setError(false);
-        const response = await axios.get(
-          `http://www.omdbapi.com/?apikey=92e32667&s=${params}&page=${page}`,
-        );
+
+        console.log({ apikey });
+
+        const response = await axios({
+          url: 'http://www.omdbapi.com',
+          method: 'get',
+          params: {
+            apikey,
+            s: params,
+            page,
+          },
+        });
 
         if (response.data.Response === 'False') {
           setIsDone(true);
