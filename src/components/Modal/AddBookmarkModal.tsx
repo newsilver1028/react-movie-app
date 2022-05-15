@@ -66,7 +66,9 @@ export default function AddBookmarkModal({ clickedMovie, onClose }: AddBookMarkM
           <button type="button" onClick={handleBookmarkClick}>
             {isMarked ? '즐겨찾기 제거' : '즐겨찾기'}
           </button>
-          <button type="button">cancel</button>
+          <button type="button" onClick={handleModalOutsideClick}>
+            cancel
+          </button>
         </div>
       </ModalContainer>
       <Background onClick={handleModalOutsideClick} aria-hidden="true" />

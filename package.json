@@ -30,7 +30,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "aws s3 sync ./build s3://wanted-react-movie-app --profile=wanted"
   },
   "eslintConfig": {
     "extends": [
@@ -56,5 +57,5 @@
     "@typescript-eslint/parser": "^5.22.0",
     "eslint": "^8.15.0"
   },
-  "packageManager": "yarn@3.2.0"
+  "packageManager": "yarn@2.4.3"
 }

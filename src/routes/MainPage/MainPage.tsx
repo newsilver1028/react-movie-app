@@ -86,16 +86,16 @@ export default function MainPage() {
   const { query, loading, moviesList, isDone, fetchQuery, loadMore } = useMovieAPI();
 
   const loader = useRef(null);
-  const handleObserver = (entries: IntersectionObserverEntry[]) => {
-    const target = entries[0];
-
-    if (target.isIntersecting && query !== '' && !isDone) {
-      loadMore();
-      return;
-    }
-  };
 
   useEffect(() => {
+    const handleObserver = (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+
+      if (target.isIntersecting && query !== '' && !isDone) {
+        loadMore();
+        return;
+      }
+    };
     const option = {
       root: null,
       rootMargin: '20px',
@@ -109,7 +109,7 @@ export default function MainPage() {
       observer.observe(loader.current);
     }
     return () => observer && observer.disconnect();
-  }, [handleObserver, loader, query]);
+  }, [isDone, loadMore, loader, query]);
 
   const handleInputTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const targetValue = e.target.value;

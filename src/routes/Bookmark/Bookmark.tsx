@@ -4,10 +4,17 @@ import MoviesList from '../../components/MoviesList/MoviesList';
 import { bookmarkMoviesState } from '../../state/bookmarkMoviesState';
 
 const BookmarkContainer = styled.div`
+  position: relative;
+
   header {
-    padding: 40px;
+    padding-left: 60px;
     width: 100%;
-    height: 40px;
+    height: 50px;
+  }
+  .scrollArea {
+    width: 100%;
+    height: 620px;
+    overflow-y: scroll;
   }
 `;
 
@@ -19,7 +26,9 @@ export default function Bookmark() {
       <header>
         <h1>내 즐겨찾기</h1>
       </header>
-      <MoviesList moviesList={bookmarkMovies} />
+      <div className="scrollArea">
+        <MoviesList moviesList={bookmarkMovies} />
+      </div>
     </BookmarkContainer>
   );
 }
