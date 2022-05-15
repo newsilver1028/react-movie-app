@@ -19,8 +19,6 @@ export const useMovieAPI = () => {
         setLoading(true);
         setError(false);
 
-        console.log({ apikey });
-
         const response = await axios({
           url: 'http://www.omdbapi.com',
           method: 'get',
@@ -46,7 +44,7 @@ export const useMovieAPI = () => {
         const searchList: IMovieSearch[] = response.data.Search;
         const removedDuplicateList = _.uniqBy(searchList, 'imdbID');
         setMoviesList((prev: IMovieSearch[]) => [...prev, ...removedDuplicateList]);
-      } catch (e: any) {
+      } catch (e: unknown) {
         setError(true);
         console.error(e);
       } finally {
