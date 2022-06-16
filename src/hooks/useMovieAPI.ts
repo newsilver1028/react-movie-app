@@ -28,6 +28,7 @@ export const useMovieAPI = () => {
             page,
           },
         });
+        console.log({ response });
 
         if (response.data.Response === 'False') {
           setIsDone(true);
@@ -51,7 +52,7 @@ export const useMovieAPI = () => {
         setLoading(false);
       }
     },
-    [page],
+    [page]
   );
 
   useEffect(() => {

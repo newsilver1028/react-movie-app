@@ -2,6 +2,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { IMovieSearch } from '../../types/movieTypes';
 import AddBookmarkModal from '../Modal/AddBookmarkModal';
+import { Portal } from '../Modal/Portal';
 import Movies from '../Movies/Movies';
 
 const MoviesListContainer = styled.div`
@@ -22,9 +23,11 @@ export default function MoviesList({ moviesList }: { moviesList: IMovieSearch[] 
 
   return (
     <MoviesListContainer>
-      {clickedMovie && isOpenBookmarkModal && (
-        <AddBookmarkModal clickedMovie={clickedMovie} onClose={handleModalClose} />
-      )}
+      <Portal>
+        {clickedMovie && isOpenBookmarkModal && (
+          <AddBookmarkModal clickedMovie={clickedMovie} onClose={handleModalClose} />
+        )}
+      </Portal>
       <Movies moviesList={moviesList} onClickItem={handleMoviItemClick} />
     </MoviesListContainer>
   );

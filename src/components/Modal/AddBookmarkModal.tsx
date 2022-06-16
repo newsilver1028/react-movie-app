@@ -10,7 +10,6 @@ const Background = styled.div`
   height: 100vh;
   background-color: black;
   opacity: 40%;
-  z-index: 2;
 `;
 
 const ModalContainer = styled.div`
@@ -26,7 +25,6 @@ const ModalContainer = styled.div`
     padding: 20px;
     background-color: white;
     border-radius: 20px;
-    z-index: 3;
     transform: translate(-50%, -50%);
 
     > button {
@@ -61,17 +59,17 @@ export default function AddBookmarkModal({ clickedMovie, onClose }: AddBookMarkM
 
   return (
     <>
+      <Background onClick={handleModalOutsideClick} aria-hidden='true' />
       <ModalContainer>
-        <div className="modalContents">
-          <button type="button" onClick={handleBookmarkClick}>
-            {isMarked ? '즐겨찾기 제거' : '즐겨찾기'}
+        <div className='modalContents'>
+          <button type='button' onClick={handleBookmarkClick}>
+            {isMarked ? 'REMOVE' : 'BOOKMARK'}
           </button>
-          <button type="button" onClick={handleModalOutsideClick}>
-            cancel
+          <button type='button' onClick={handleModalOutsideClick}>
+            CANCEL
           </button>
         </div>
       </ModalContainer>
-      <Background onClick={handleModalOutsideClick} aria-hidden="true" />
     </>
   );
 }

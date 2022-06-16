@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
+import { useInfiniteQuery } from 'react-query';
 import styled from 'styled-components';
 import MoviesList from '../../components/MoviesList/MoviesList';
-import { useMovieAPI } from '../../hooks/useMovieAPI';
+import { getMovieListAPI } from '../../hooks/getMovieListAPI';
 
 const MainPageContainer = styled.div`
   position: relative;
@@ -83,36 +84,47 @@ const MainPageContainer = styled.div`
 
 export default function MainPage() {
   const [search, setSearch] = useState<string>('');
-  const { query, loading, moviesList, isDone, fetchQuery, loadMore } = useMovieAPI();
+  const [searchWord, setSearchWord] = useState<string>('');
+  const { fetchNextPage, isFetchingNextPage, ...result } = useInfiniteQuery(
+    ['getMovieList', searchWord],
+    ({ pageParam = 1 }) => getMovieListAPI({ pageParam, searchWord }),
+    {
+      getNextPageParam: (lastPage) => {
+        if (!lastPage.isLast) return lastPage.nextPage;
+        return undefined;
+      },
+    }
+  );
+  const movieList = result.data?.pages[0].result ?? [];
+  const isEmptyMovieList = movieList.length === 0;
 
-  const loader = useRef(null);
+  const observerRef = useRef<IntersectionObserver>();
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  const intersectionObserver = useCallback(
+    (entries: IntersectionObserverEntry[], io: IntersectionObserver) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          io.unobserve(entry.target);
+          fetchNextPage();
+        }
+      });
+    },
+    [fetchNextPage]
+  );
 
   useEffect(() => {
-    const handleObserver = (entries: IntersectionObserverEntry[]) => {
-      const target = entries[0];
-
-      if (target.isIntersecting && query !== '' && !isDone) {
-        loadMore();
-        return;
-      }
-    };
-    const option = {
-      root: null,
-      rootMargin: '20px',
-      threshold: 1,
-    };
-    let observer = new global.IntersectionObserver(handleObserver, option);
-    if (loader.current) {
-      observer = new global.IntersectionObserver(handleObserver, {
-        ...option,
-      });
-      observer.observe(loader.current);
+    if (observerRef.current) {
+      observerRef.current.disconnect();
     }
-    return () => observer && observer.disconnect();
-  }, [isDone, loadMore, loader, query]);
+    observerRef.current = new IntersectionObserver(intersectionObserver);
+    if (loaderRef.current) {
+      observerRef.current.observe(loaderRef.current);
+    }
+  }, [intersectionObserver, result]);
 
   const handleInputTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const targetValue = e.target.value;
+    const targetValue = e.currentTarget.value;
     setSearch(targetValue);
   };
 
@@ -122,7 +134,7 @@ export default function MainPage() {
 
   const handleSubmitButtonClick = (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    fetchQuery(search);
+    setSearchWord(search);
   };
 
   return (
@@ -130,22 +142,24 @@ export default function MainPage() {
       <header>
         <form>
           <input
-            type="text"
+            type='text'
             value={search}
             onClick={handleInputClick}
             onChange={handleInputTextChange}
           />
-          <button className="submitButton" type="submit" onClick={handleSubmitButtonClick}>
-            <FiSearch className="searchIcon" color="dimgray" size="30" />
+          <button className='submitButton' type='submit' onClick={handleSubmitButtonClick}>
+            <FiSearch className='searchIcon' color='dimgray' size='30' />
           </button>
         </form>
       </header>
-      <div className="scrollArea">
-        {moviesList.length === 0 && <div className="nothingResult">검색결과가 없습니다</div>}
-        <MoviesList moviesList={moviesList} />
-        <div ref={loader} />
-        {loading && <div className="loadingArea">loading...</div>}
-      </div>
+      <main>
+        <div className='scrollArea'>
+          {isEmptyMovieList && <div className='nothingResult'>검색결과가 없습니다</div>}
+          {!isFetchingNextPage && <MoviesList moviesList={movieList} />}
+          <div ref={loaderRef} />
+          {!isEmptyMovieList && isFetchingNextPage && <div className='loadingArea'>loading...</div>}
+        </div>
+      </main>
     </MainPageContainer>
   );
 }

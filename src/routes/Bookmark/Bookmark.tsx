@@ -26,9 +26,11 @@ export default function Bookmark() {
       <header>
         <h1>내 즐겨찾기</h1>
       </header>
-      <div className="scrollArea">
-        <MoviesList moviesList={bookmarkMovies} />
-      </div>
+      <main>
+        <div className='scrollArea'>
+          <MoviesList moviesList={bookmarkMovies} />
+        </div>
+      </main>
     </BookmarkContainer>
   );
 }

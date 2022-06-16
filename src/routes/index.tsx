@@ -1,19 +1,18 @@
 import { Route, Routes } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
-import Footer from '../components/Footer';
 import Bookmark from './Bookmark/Bookmark';
+import Layout from './Layout/Layout';
 import MainPage from './MainPage/MainPage';
 
 export default function App() {
   return (
     <RecoilRoot>
-      <div className="contents">
-        <Routes>
-          <Route path="/" element={<MainPage />} />
-          <Route path="bookmark" element={<Bookmark />} />
-        </Routes>
-        <Footer />
-      </div>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<MainPage />} />
+          <Route path='bookmark' element={<Bookmark />} />
+        </Route>
+      </Routes>
     </RecoilRoot>
   );
 }
