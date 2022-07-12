@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
-import Bookmark from './Bookmark/Bookmark';
-import Layout from './Layout/Layout';
-import MainPage from './MainPage/MainPage';
+import Bookmark from './Bookmark';
+import Layout from './Layout';
+import MainPage from './MainPage';
 
-export default function App() {
+const App = () => {
   return (
     <RecoilRoot>
       <Routes>
@@ -15,4 +15,6 @@ export default function App() {
       </Routes>
     </RecoilRoot>
   );
-}
+};
+
+export default App;

@@ -5,15 +5,13 @@ import styled from 'styled-components';
 
 const FooterContainer = styled.footer`
   position: absolute;
-  left: 0;
-  bottom: 2px;
+  bottom: 0;
   display: flex;
   flex-flow: row wrap;
   justify-content: space-around;
   width: 100%;
   height: 50px;
-  padding-top: 5px;
-  background-color: white;
+  background-color: transparent;
 
   nav {
     display: flex;
@@ -29,49 +27,41 @@ const FooterContainer = styled.footer`
     display: flex;
     flex-flow: row wrap;
     width: 50%;
-    align-items: center;
     justify-content: center;
-    text-decoration-line: none;
-    color: dimgray;
-    font-size: 1.1rem;
   }
 
   .selected {
-    background-color: aliceblue;
+    .bookmarkIcon,
+    .searchIcon {
+      color: white;
+    }
   }
 
   .bookmarkIcon,
   .searchIcon {
+    color: #6a6a73;
     margin: 0 5px;
-  }
-
-  .bookmarkIcon {
-    color: orange;
-  }
-
-  .searchIcon {
-    color: dimgrey;
   }
 `;
 
-export default function Footer() {
+const Footer = () => {
   const location = useLocation();
   const pathName = location.pathname;
 
   return (
     <FooterContainer>
-      <Link to="/" className={pathName === '/' ? 'selected' : ''}>
+      <Link to='/' className={pathName === '/' ? 'selected' : ''}>
         <nav>
-          <FiSearch className="searchIcon" color="dimgray" size="25" />
-          <span>검색</span>
+          <FiSearch className='searchIcon' size='25' />
         </nav>
       </Link>
-      <Link to="bookmark" className={pathName === '/bookmark' ? 'selected' : ''}>
+      <Link to='bookmark' className={pathName === '/bookmark' ? 'selected' : ''}>
         <nav>
-          <FaStar className="bookmarkIcon" size="25" />
-          <span>즐겨찾기</span>
+          <FaStar className='bookmarkIcon' size='25' />
         </nav>
       </Link>
     </FooterContainer>
   );
-}
+};
+
+export default Footer;

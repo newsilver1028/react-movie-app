@@ -1,48 +1,91 @@
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { bookmarkMoviesState } from '../../state/bookmarkMoviesState';
-import { IMovieSearch } from '../../types/movieTypes';
+import { IMovieSearch } from '../../types/type.d';
+import { FaStar } from 'react-icons/fa';
+import { FiStar } from 'react-icons/fi';
 
 const Background = styled.div`
   position: absolute;
   top: 0;
   width: 100%;
   height: 100vh;
-  background-color: black;
-  opacity: 40%;
+  backdrop-filter: blur(5px);
 `;
 
 const ModalContainer = styled.div`
   .modalContents {
     position: absolute;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    flex: 1;
     top: 50%;
     left: 50%;
-    width: 400px;
-    height: 100px;
-    padding: 20px;
-    background-color: white;
+    width: 300px;
+    height: 550px;
+    padding: 30px 10px;
     border-radius: 20px;
     transform: translate(-50%, -50%);
+    background-color: rgb(23, 23, 30);
+    backdrop-filter: blur(5px);
+    color: white;
 
-    > button {
-      width: 50%;
-      height: 40px;
+    .textContents {
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      width: 290px;
+      align-items: center;
+
+      .dlContents {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        height: 30px;
+      }
+    }
+
+    .title {
+      width: 290px;
+      height: 60px;
+      overflow: hidden;
+      font-size: 1.4rem;
+      font-weight: 600;
+      text-align: center;
+      word-break: break-all;
+    }
+
+    .imgWrapper {
+      width: 240px;
+      height: 360px;
+    }
+
+    img {
+      width: 240px;
+      border-radius: 10px;
+    }
+
+    .iconWrapper {
+      margin-top: 10px;
+      > button {
+        background-color: transparent;
+        border: none;
+      }
     }
   }
 `;
 
-export interface AddBookMarkModalProps {
+interface AddBookMarkModalProps {
   clickedMovie: IMovieSearch;
   onClose: () => void;
 }
 
-export default function AddBookmarkModal({ clickedMovie, onClose }: AddBookMarkModalProps) {
+const AddBookmarkModal = ({ clickedMovie, onClose }: AddBookMarkModalProps) => {
   const [bookmarkMovies, setBookmarkMovies] = useRecoilState(bookmarkMoviesState);
 
   const isMarked = bookmarkMovies.some((m) => m.imdbID === clickedMovie.imdbID);
+
+  const { Title: title, Year: year, Type: type, Poster: poster } = clickedMovie;
 
   const handleModalOutsideClick = () => {
     onClose?.();
@@ -57,19 +100,39 @@ export default function AddBookmarkModal({ clickedMovie, onClose }: AddBookMarkM
     onClose();
   };
 
+  const onErrorImg = (e: any) => {
+    e.currentTarget.src =
+      'https://img.icons8.com/fluency-systems-regular/500/6a6a73/clapperboard.png';
+  };
+
   return (
     <>
       <Background onClick={handleModalOutsideClick} aria-hidden='true' />
       <ModalContainer>
         <div className='modalContents'>
-          <button type='button' onClick={handleBookmarkClick}>
-            {isMarked ? 'REMOVE' : 'BOOKMARK'}
-          </button>
-          <button type='button' onClick={handleModalOutsideClick}>
-            CANCEL
-          </button>
+          <div className='imgWrapper'>
+            <img src={poster} alt={title} onError={onErrorImg} />
+          </div>
+          <h1 className='title'>{title}</h1>
+          <dl className='textContents'>
+            <div className='dlContents'>
+              <dt>YEAR |</dt>
+              <dd>{year}</dd>
+            </div>
+            <div className='dlContents'>
+              <dt>TYPE |</dt>
+              <dd>{type}</dd>
+            </div>
+          </dl>
+          <div className='iconWrapper'>
+            <button type='button' onClick={handleBookmarkClick}>
+              {isMarked ? <FaStar size='25' color='white' /> : <FiStar size='25' color='#6a6a73' />}
+            </button>
+          </div>
         </div>
       </ModalContainer>
     </>
   );
-}
+};
+
+export default AddBookmarkModal;

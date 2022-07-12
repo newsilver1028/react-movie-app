@@ -1,6 +1,6 @@
 import axios from 'axios';
 import _ from 'lodash';
-import { IMovieSearch } from '../types/movieTypes';
+import { IMovieSearch } from '../types/type.d';
 
 const apikey = process.env.REACT_APP_MOVIE_API_KEY;
 
@@ -20,6 +20,6 @@ export const getMovieListAPI = async ({
   return {
     result: removedDuplicateList,
     nextPage: pageParam + 1,
-    isLast: response.data.Response,
+    isLast: response.data.Response === 'False',
   };
 };

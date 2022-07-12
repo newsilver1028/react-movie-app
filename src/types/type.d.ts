@@ -11,3 +11,9 @@ export interface IMovie {
   totalResults: string;
   Response: string;
 }
+
+export interface IMovieList {
+  isLast: boolean;
+  nextPage: number;
+  result: IMovieSearch[];
+}

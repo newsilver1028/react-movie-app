@@ -1,6 +1,6 @@
 import { atom } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
-import { IMovieSearch } from '../types/movieTypes';
+import { IMovieSearch } from '../types/type.d';
 
 const { persistAtom } = recoilPersist();
 

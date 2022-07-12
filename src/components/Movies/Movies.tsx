@@ -1,15 +1,15 @@
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { bookmarkMoviesState } from '../../state/bookmarkMoviesState';
-import { IMovieSearch } from '../../types/movieTypes';
+import { IMovieSearch } from '../../types/type.d';
 import Movie from './Movie';
 
 const MovieContainer = styled.ul`
+  padding: 0;
   position: relative;
   display: flex;
-  flex-direction: column;
-  padding: 40px;
-  width: 80%;
+  flex-flow: row wrap;
+  justify-content: space-around;
 `;
 
 export interface Props {
@@ -17,7 +17,7 @@ export interface Props {
   onClickItem?: (item: IMovieSearch) => void;
 }
 
-export default function Movies({ moviesList, onClickItem }: Props) {
+const Movies = ({ moviesList, onClickItem }: Props) => {
   const bookmarkList = useRecoilValue(bookmarkMoviesState);
   const handleMovieListClick = (movie: IMovieSearch) => {
     onClickItem?.(movie);
@@ -38,4 +38,5 @@ export default function Movies({ moviesList, onClickItem }: Props) {
       })}
     </MovieContainer>
   );
-}
+};
+export default Movies;

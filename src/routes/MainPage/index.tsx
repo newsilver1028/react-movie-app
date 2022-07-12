@@ -2,13 +2,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 import { useInfiniteQuery } from 'react-query';
 import styled from 'styled-components';
-import MoviesList from '../../components/MoviesList/MoviesList';
+import MoviesList from '../../components/MoviesList';
 import { getMovieListAPI } from '../../hooks/getMovieListAPI';
+import { IMovieList } from '../../types/type.d';
 
 const MainPageContainer = styled.div`
   position: relative;
   display: flex;
   align-items: center;
+  color: white;
 
   header {
     position: absolute;
@@ -22,17 +24,19 @@ const MainPageContainer = styled.div`
     justify-content: space-around;
     align-items: center;
     width: 100%;
-    height: 50px;
+    height: 60px;
   }
 
   input {
+    padding-left: 15px;
     width: 80%;
     height: 40px;
     border: none;
-    border-bottom: 1px solid lightgrey;
     font-size: 1.2rem;
-    color: dimgray;
-    background-color: transparent;
+    color: white;
+    background-color: #17171e;
+    border-radius: 15px;
+    font-family: 'Roboto Condensed', sans-serif;
   }
 
   input:focus,
@@ -40,9 +44,13 @@ const MainPageContainer = styled.div`
     outline: none;
   }
 
+  input::placeholder {
+    color: #6a6a73;
+  }
+
   .submitButton {
     position: absolute;
-    right: 10%;
+    right: 30px;
     height: 40px;
     border: none;
     background-color: transparent;
@@ -53,7 +61,7 @@ const MainPageContainer = styled.div`
   .scrollArea {
     margin-top: 50px;
     width: 100%;
-    height: 620px;
+    height: 590px;
     overflow-y: scroll;
   }
 
@@ -82,24 +90,28 @@ const MainPageContainer = styled.div`
   }
 `;
 
-export default function MainPage() {
+const MainPage = () => {
   const [search, setSearch] = useState<string>('');
   const [searchWord, setSearchWord] = useState<string>('');
-  const { fetchNextPage, isFetchingNextPage, ...result } = useInfiniteQuery(
+
+  const observerRef = useRef<IntersectionObserver>();
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  const { fetchNextPage, isFetchingNextPage, data, hasNextPage, ...result } = useInfiniteQuery(
     ['getMovieList', searchWord],
     ({ pageParam = 1 }) => getMovieListAPI({ pageParam, searchWord }),
     {
+      enabled: !!searchWord,
       getNextPageParam: (lastPage) => {
         if (!lastPage.isLast) return lastPage.nextPage;
         return undefined;
       },
+      staleTime: 3 * 60 * 1000,
+      cacheTime: 3 * 60 * 1000,
     }
   );
-  const movieList = result.data?.pages[0].result ?? [];
-  const isEmptyMovieList = movieList.length === 0;
 
-  const observerRef = useRef<IntersectionObserver>();
-  const loaderRef = useRef<HTMLDivElement>(null);
+  const movieList = data?.pages;
 
   const intersectionObserver = useCallback(
     (entries: IntersectionObserverEntry[], io: IntersectionObserver) => {
@@ -121,6 +133,9 @@ export default function MainPage() {
     if (loaderRef.current) {
       observerRef.current.observe(loaderRef.current);
     }
+    return () => {
+      observerRef.current && observerRef.current.disconnect();
+    };
   }, [intersectionObserver, result]);
 
   const handleInputTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,6 +151,7 @@ export default function MainPage() {
     e.preventDefault();
     setSearchWord(search);
   };
+  console.log({ movieList });
 
   return (
     <MainPageContainer>
@@ -146,20 +162,25 @@ export default function MainPage() {
             value={search}
             onClick={handleInputClick}
             onChange={handleInputTextChange}
+            placeholder='search your movie'
           />
           <button className='submitButton' type='submit' onClick={handleSubmitButtonClick}>
-            <FiSearch className='searchIcon' color='dimgray' size='30' />
+            <FiSearch className='searchIcon' color='white' size='30' />
           </button>
         </form>
       </header>
       <main>
         <div className='scrollArea'>
-          {isEmptyMovieList && <div className='nothingResult'>검색결과가 없습니다</div>}
-          {!isFetchingNextPage && <MoviesList moviesList={movieList} />}
+          {!isFetchingNextPage &&
+            movieList?.map((movie: IMovieList, index) => (
+              <MoviesList key={index} moviesList={movie.result} />
+            ))}
           <div ref={loaderRef} />
-          {!isEmptyMovieList && isFetchingNextPage && <div className='loadingArea'>loading...</div>}
+          {isFetchingNextPage && <div className='loadingArea'>loading...</div>}
         </div>
       </main>
     </MainPageContainer>
   );
-}
+};
+
+export default MainPage;
